@@ -56,6 +56,7 @@ class MyForm(QDialog):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.cfg = None
         self.weight_type = None
+        self.info = 'red: sunburn; green: ulcer; orange: wind scarring'
 
     def read_and_show_image_from_path(self, image_path):
         image = cv2.imdecode(np.fromfile(image_path, np.uint8), cv2.IMREAD_COLOR)
@@ -203,7 +204,7 @@ class MyForm(QDialog):
             torch.cuda.synchronize()
             end = time.time()
             cv2.imencode(".jpg", image_det)[1].tofile(os.path.join(self.save_path, f'{self.save_id}.jpg'))
-            self.ui.textBrowser.append(f'time:{end-since:.5f}s save image in {os.path.join(self.save_path, f"{self.save_id}.jpg")}')
+            self.ui.textBrowser.append(f'time:{end-since:.5f}s save image in {os.path.join(self.save_path, f"{self.save_id}.jpg")}\n' + self.info)
             self.save_id += 1
             self.show_image_from_array(image_det, det=True)
     
@@ -250,9 +251,9 @@ class MyForm(QDialog):
             self.out.write(image_det)
             self.show_image_from_array(image_det, det=True)
             if self.video_count is not None:
-                self.ui.textBrowser.append(f'{self.print_id}/{self.video_count} Frames. time:{end-since:.5f}s fps:{1 / (end-since):.3f}')
+                self.ui.textBrowser.append(f'{self.print_id}/{self.video_count} Frames. time:{end-since:.5f}s fps:{1 / (end-since):.3f}\n' + self.info)
             else:
-                self.ui.textBrowser.append(f'{self.print_id} Frames. time:{end-since:.5f}s fps:{1 / (end-since):.3f}' + self.analyse_result(result))
+                self.ui.textBrowser.append(f'{self.print_id} Frames. time:{end-since:.5f}s fps:{1 / (end-since):.3f}\n' + self.info)
             self.print_id += 1
         else:
             self.now = None
