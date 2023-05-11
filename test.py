@@ -9,13 +9,13 @@ def pred_img():
     model_path = 'weights/FastSegFormer_P_224.pth'
     net = FastSegFormer(num_classes=4, pretrained=False, backbone='poolformer_s12',Pyramid="multiscale", cnn_branch=True).to(device='cuda')
     net.load_state_dict(torch.load(model_path, map_location='cuda'))
-    old_img, result = detect_image(model=net, image = image, name_classes=["background", "sunburn", "Ulcer", "wind scarring"], num_classes=4, input_shape=[224, 224], device='cuda', weight_type='pth')
+    result, image_det = detect_image(model=net, image = image, name_classes=["background", "sunburn", "Ulcer", "wind scarring"], num_classes=4, input_shape=[224, 224], device='cuda', weight_type='pth')
     
-    cv2.imshow("x", old_img)
+    cv2.imshow("x", result)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-    cv2.imshow("x", result)
+    cv2.imshow("x", image_det)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
     
@@ -24,13 +24,13 @@ def pred_img_onnx():
     model_path = 'weights/FastSegFormer_P_224.onnx'
     providers = ['CUDAExecutionProvider', 'CPUExecutionProvider']
     net = onnxruntime.InferenceSession(model_path, providers=providers)
-    old_img, result = detect_image(model=net, image = image, name_classes=["background", "sunburn", "Ulcer", "wind scarring"], num_classes=4, input_shape=[224, 224], device='cuda', weight_type='onnx')
+    result, image_det = detect_image(model=net, image = image, name_classes=["background", "sunburn", "Ulcer", "wind scarring"], num_classes=4, input_shape=[224, 224], device='cuda', weight_type='onnx')
     
-    cv2.imshow("x", old_img)
+    cv2.imshow("x", result)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-    cv2.imshow("x", result)
+    cv2.imshow("x", image_det)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
     

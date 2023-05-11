@@ -31,7 +31,7 @@ def blend_images(old_image, new_image, alpha):
 
 
 
-def detect_image(model, image, name_classes = None, num_classes = 21, count = False, mix_type = 0, input_shape = [224, 224], device = 'cpu', weight_type = None):
+def detect_image(model, image, name_classes = None, num_classes = 21, count = False, input_shape = [224, 224], device = 'cpu', weight_type = None):
         # 转化为彩色图像
         image = cvtColor(image)
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
@@ -84,15 +84,25 @@ def detect_image(model, image, name_classes = None, num_classes = 21, count = Fa
                             (64, 128, 128), (192, 128, 128), (0, 64, 0), (128, 64, 0), (0, 192, 0), (128, 192, 0), (0, 64, 128), 
                             (128, 64, 12)]
 
-        if mix_type == 0:
-            seg_img = np.reshape(np.array(colors, np.uint8)[np.reshape(pred, [-1])], [original_h, original_w, -1])
-            image = blend_images(old_image=old_img, new_image=seg_img, alpha=0.6)
-        elif mix_type == 1:
-            seg_img = np.reshape(np.array(colors, np.uint8)[np.reshape(pred, [-1])], [original_h, original_w, -1])
-            image = seg_img
         
-        old_img = cv2.cvtColor(old_img, cv2.COLOR_RGB2BGR)
+        seg_img = np.reshape(np.array(colors, np.uint8)[np.reshape(pred, [-1])], [original_h, original_w, -1])
+        image = blend_images(old_image=old_img, new_image=seg_img, alpha=0.6)
+        
+        seg_img = cv2.cvtColor(seg_img, cv2.COLOR_RGB2BGR)
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
         
             
-        return old_img, image
+        return seg_img, image
+    
+    
+# def track_processing(frame, det_result):
+#     if type(det_result) is torch.Tensor:
+#         det_result = det_result.cpu().detach().numpy()
+#     online_targets = self.tracker.update(det_result[:, :5], frame.shape[:2], [640, 640])
+#     for t in online_targets:
+#         tlwh = t.tlwh
+#         tid = t.track_id
+#         vertical = tlwh[2] / tlwh[3] > self.track_opt.aspect_ratio_thresh
+#         if tlwh[2] * tlwh[3] > self.track_opt.min_box_area and not vertical:
+#             plot_one_box([tlwh[0], tlwh[1], tlwh[0] + tlwh[2], tlwh[1] + tlwh[3]], frame, (0, 0, 255), str(tid))
+#     return frame

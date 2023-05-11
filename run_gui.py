@@ -5,10 +5,10 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from gui import Ui_Dialog
-from PIL import Image
 from models.fastsegfomer.fastsegformer import FastSegFormer
 from utils.utils import *
 import onnxruntime
+
 
 def resize_img(img, img_size=600, value=[255, 255, 255], inter=cv2.INTER_AREA):
     old_shape = img.shape[:2]
@@ -150,7 +150,7 @@ class MyForm(QDialog):
             self.reset_timer()
         
         if not cap.isOpened():
-            self.show_message('视频打开失败,只支持MP4格式!')
+            self.show_message('MP4视频打开失败!')
         else:
             self.reset_det_label()
             flag, image = cap.read()
@@ -199,7 +199,7 @@ class MyForm(QDialog):
         else:
             torch.cuda.synchronize()
             since = time.time()
-            img, image_det = detect_image(model=self.model, image=self.now, name_classes=self.cfg['name_classes'], num_classes=self.cfg['num_classes'], input_shape=self.cfg['input_shape'], device=self.device, weight_type=self.weight_type)
+            result, image_det = detect_image(model=self.model, image=self.now, name_classes=self.cfg['name_classes'], num_classes=self.cfg['num_classes'], input_shape=self.cfg['input_shape'], device=self.device, weight_type=self.weight_type)
             torch.cuda.synchronize()
             end = time.time()
             cv2.imencode(".jpg", image_det)[1].tofile(os.path.join(self.save_path, f'{self.save_id}.jpg'))
@@ -226,11 +226,11 @@ class MyForm(QDialog):
             image = self.read_and_show_image_from_path(img_path)
             torch.cuda.synchronize()
             since = time.time()
-            image_det, result = self.model(image)
+            result, image_det = detect_image(model=self.model, image=image, name_classes=self.cfg['name_classes'], num_classes=self.cfg['num_classes'], input_shape=self.cfg['input_shape'], device=self.device, weight_type=self.weight_type)
             torch.cuda.synchronize()
             end = time.time()
             cv2.imencode(".jpg", image_det)[1].tofile(os.path.join(self.save_path, f'{self.save_id}.jpg'))
-            self.ui.textBrowser.append(f'time:{end-since:.5f}s {self.print_id}/{self.folder_len} save image in {os.path.join(self.save_path, f"{self.save_id}.jpg")}' + self.analyse_result(result))
+            self.ui.textBrowser.append(f'time:{end-since:.5f}s {self.print_id}/{self.folder_len} save image in {os.path.join(self.save_path, f"{self.save_id}.jpg")}')
             self.show_image_from_array(image_det, det=True)
             self.print_id += 1
             self.save_id += 1
@@ -242,7 +242,7 @@ class MyForm(QDialog):
             self.show_image_from_array(image, ori=True)
             torch.cuda.synchronize()
             since = time.time()
-            image_det, result = self.model(image.copy())
+            result, image_det = detect_image(model=self.model, image=image.copy(), name_classes=self.cfg['name_classes'], num_classes=self.cfg['num_classes'], input_shape=self.cfg['input_shape'], device=self.device, weight_type=self.weight_type)
             if self.ui.comboBox.currentText() != 'NoTrack':
                 image_det = self.model.track_processing(image.copy(), result)
             torch.cuda.synchronize()
@@ -250,7 +250,7 @@ class MyForm(QDialog):
             self.out.write(image_det)
             self.show_image_from_array(image_det, det=True)
             if self.video_count is not None:
-                self.ui.textBrowser.append(f'{self.print_id}/{self.video_count} Frames. time:{end-since:.5f}s fps:{1 / (end-since):.3f}' + self.analyse_result(result))
+                self.ui.textBrowser.append(f'{self.print_id}/{self.video_count} Frames. time:{end-since:.5f}s fps:{1 / (end-since):.3f}')
             else:
                 self.ui.textBrowser.append(f'{self.print_id} Frames. time:{end-since:.5f}s fps:{1 / (end-since):.3f}' + self.analyse_result(result))
             self.print_id += 1
