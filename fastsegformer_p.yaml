@@ -1,5 +1,5 @@
 num_classes: 4
-model_path: weights/FastSegFormer_P_224.pth
+model_path: weights/FastSegFormer_P_224.onnx
 model_type: FastSegFormer_P
 input_shape: [224, 224]
 name_classes: ["background", "sunburn", "Ulcer", "wind scarring"]

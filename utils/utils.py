@@ -31,7 +31,7 @@ def blend_images(old_image, new_image, alpha):
 
 
 
-def detect_image(model, image, name_classes = None, num_classes = 21, count = False, mix_type = 0, input_shape = [224, 224], device = 'cpu'):
+def detect_image(model, image, name_classes = None, num_classes = 21, count = False, mix_type = 0, input_shape = [224, 224], device = 'cpu', weight_type = None):
         # 转化为彩色图像
         image = cvtColor(image)
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
@@ -44,11 +44,21 @@ def detect_image(model, image, name_classes = None, num_classes = 21, count = Fa
         # 添加Batch维度
         image_data  = np.expand_dims(np.transpose(preprocess_input(np.array(image_data, np.float32)), (2, 0, 1)), 0)
         
-        with torch.no_grad():
-            images = torch.from_numpy(image_data)
-            
-            images = images.to(device)
-            pred = model(images)[0]
+        if weight_type == 'pth':
+            with torch.no_grad():
+                # 转化为张量
+                images = torch.from_numpy(image_data)
+                images = images.to(device)
+                pred = model(images)[0]
+                pred = F.softmax(pred.permute(1,2,0),dim = -1).cpu().numpy()
+                pred = cv2.resize(pred, (original_w, original_h), interpolation = cv2.INTER_LINEAR)
+                pred = pred.argmax(axis=-1)
+        elif weight_type == 'onnx':
+            ort_inputs = {'images': image_data}
+            pred = model.run(['output'], ort_inputs)[0]
+            pred = pred[0]
+            # 转化为张量
+            pred = torch.tensor(pred)
             pred = F.softmax(pred.permute(1,2,0),dim = -1).cpu().numpy()
             pred = cv2.resize(pred, (original_w, original_h), interpolation = cv2.INTER_LINEAR)
             pred = pred.argmax(axis=-1)
@@ -80,5 +90,9 @@ def detect_image(model, image, name_classes = None, num_classes = 21, count = Fa
         elif mix_type == 1:
             seg_img = np.reshape(np.array(colors, np.uint8)[np.reshape(pred, [-1])], [original_h, original_w, -1])
             image = seg_img
+        
+        old_img = cv2.cvtColor(old_img, cv2.COLOR_RGB2BGR)
+        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+        
             
         return old_img, image

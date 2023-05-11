@@ -8,7 +8,7 @@ from gui import Ui_Dialog
 from PIL import Image
 from models.fastsegfomer.fastsegformer import FastSegFormer
 from utils.utils import *
-import torch.onnx as onnx
+import onnxruntime
 
 def resize_img(img, img_size=600, value=[255, 255, 255], inter=cv2.INTER_AREA):
     old_shape = img.shape[:2]
@@ -55,6 +55,7 @@ class MyForm(QDialog):
         self.show()
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.cfg = None
+        self.weight_type = None
 
     def read_and_show_image_from_path(self, image_path):
         image = cv2.imdecode(np.fromfile(image_path, np.uint8), cv2.IMREAD_COLOR)
@@ -63,14 +64,11 @@ class MyForm(QDialog):
         return image
     
     def show_image_from_array(self, image, ori=False, det=False):
+        # QT的setPixmap读取的为BGR格式
         resize_image = cv2.cvtColor(resize_img(image), cv2.COLOR_RGB2BGR)
         if ori:
             self.ui.label_ori.setPixmap(QtGui.QPixmap.fromImage(QtGui.QImage(resize_image.data, resize_image.shape[1], resize_image.shape[0], QtGui.QImage.Format_RGB888)))
         if det:
-            # cv2.imshow('detect_result', resize_image)
-            # cv2.waitKey(0)
-            # cv2.destroyAllWindows()
-            resize_image = resize_img(image)
             self.ui.label_det.setPixmap(QtGui.QPixmap.fromImage(QtGui.QImage(resize_image.data, resize_image.shape[1], resize_image.shape[0], QtGui.QImage.Format_RGB888)))
     
     def show_message(self, message):
@@ -105,8 +103,14 @@ class MyForm(QDialog):
             # init FastSegFormer-p model
             if self.cfg['model_type'] == 'FastSegFormer_P':
                 self.model = FastSegFormer(num_classes=self.cfg['num_classes'], pretrained=False, backbone='poolformer_s12', Pyramid='multiscale', cnn_branch=True).to(self.device)
-                checkpoint = torch.load(self.cfg['model_path'], map_location=self.device)
-                self.model.load_state_dict(checkpoint)
+                if self.cfg['model_path'].endswith('pth'):
+                    self.weight_type = 'pth'
+                    checkpoint = torch.load(self.cfg['model_path'], map_location=self.device)
+                    self.model.load_state_dict(checkpoint)
+                elif self.cfg['model_path'].endswith('onnx'):
+                    self.weight_type = 'onnx'
+                    providers = ['CUDAExecutionProvider', 'CPUExecutionProvider']
+                    self.model = onnxruntime.InferenceSession(self.cfg['model_path'], providers=providers)
             else:
                 self.ui.textBrowser.append(f'load yaml failure.')
             self.ui.textBrowser.append(f'load yaml success.')
@@ -195,7 +199,7 @@ class MyForm(QDialog):
         else:
             torch.cuda.synchronize()
             since = time.time()
-            img, image_det = detect_image(model=self.model, image=self.now, name_classes=self.cfg['name_classes'], num_classes=self.cfg['num_classes'], input_shape=self.cfg['input_shape'], device=self.device)
+            img, image_det = detect_image(model=self.model, image=self.now, name_classes=self.cfg['name_classes'], num_classes=self.cfg['num_classes'], input_shape=self.cfg['input_shape'], device=self.device, weight_type=self.weight_type)
             torch.cuda.synchronize()
             end = time.time()
             cv2.imencode(".jpg", image_det)[1].tofile(os.path.join(self.save_path, f'{self.save_id}.jpg'))
@@ -263,7 +267,7 @@ class MyForm(QDialog):
 
 if __name__ == '__main__':
     gui_title = 'FastSegFormer-VisionSystem'
-    textBrowser_size = 20
+    textBrowser_size = 15
     
     app = QApplication(sys.argv)
     w = MyForm(title=gui_title, textBrowser_size=textBrowser_size)
