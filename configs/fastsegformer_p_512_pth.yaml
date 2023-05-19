@@ -1,0 +1,5 @@
+num_classes: 4
+model_path: weights/FastSegFormer_P_512.pth
+model_type: FastSegFormer_P
+input_shape: [512, 512]
+name_classes: ["background", "sunburn", "Ulcer", "wind scarring"]

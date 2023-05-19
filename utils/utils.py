@@ -39,10 +39,12 @@ def detect_image(model, image, name_classes = None, num_classes = 21, count = Fa
         old_img = copy.deepcopy(image)
         original_h  = np.array(image).shape[0]
         original_w  = np.array(image).shape[1]
-        
-        image_data = cv2.resize(image, input_shape, interpolation=cv2.INTER_LINEAR)
+        if original_h != input_shape[0] or original_w != input_shape[1]: 
+            image_data = cv2.resize(image, input_shape, interpolation=cv2.INTER_LINEAR)
         # 添加Batch维度
         image_data  = np.expand_dims(np.transpose(preprocess_input(np.array(image_data, np.float32)), (2, 0, 1)), 0)
+        # 将内存不连续的数组转成连续存储
+        image_data = np.ascontiguousarray(image_data)
         
         if weight_type == 'pth':
             with torch.no_grad():
