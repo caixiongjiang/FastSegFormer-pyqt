@@ -145,7 +145,7 @@ def make_orange_mp4():
     
 if __name__ == '__main__':
     pred_img()
-    # pred_img_onnx()
+    pred_img_onnx()
     # simplify_onnx_model()
     # fp16_pth2onnx_model()
     # make_orange_mp4()
