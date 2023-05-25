@@ -186,7 +186,7 @@ class MyForm(QDialog):
             fourcc  = cv2.VideoWriter_fourcc(*'XVID')
             size    = (int(self.now.get(cv2.CAP_PROP_FRAME_WIDTH)), int(self.now.get(cv2.CAP_PROP_FRAME_HEIGHT)))
             if self.out is None:
-                self.out = cv2.VideoWriter(os.path.join(self.save_path, f'{self.save_id}.mp4'), fourcc, 25.0, size)
+                self.out = cv2.VideoWriter(os.path.join(self.save_path, f'{self.save_id}.mp4'), fourcc, 30.0, size)
             
             self.track_init()
             self._timer = QTimer(self)

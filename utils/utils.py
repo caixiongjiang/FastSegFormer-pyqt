@@ -2,6 +2,7 @@ import numpy as np
 from PIL import Image
 import copy
 import cv2
+import threading
 
 import torch.nn as nn
 import torch
@@ -95,7 +96,26 @@ def detect_image(model, image, name_classes = None, num_classes = 21, count = Fa
         
             
         return seg_img, image
-    
+
+
+
+
+
+
+
+
+
+# def detect_image_thread(model, image, name_classes = None, num_classes = 21, count = False, input_shape = [224, 224], device = 'cpu', weight_type = None):    
+
+
+
+
+
+
+
+
+
+  
     
 # def track_processing(frame, det_result):
 #     if type(det_result) is torch.Tensor:
