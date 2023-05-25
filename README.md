@@ -7,6 +7,7 @@ Navel orange defect segmentation model video detection UI.
 - [x] Create PyQT interface for navel orange defect segmentation. (May/10/2023)
 - [x] Produce 30 frames of navel orange assembly line simulation video. (May/13/2023)
 - [x] Support onnx format for video detection. (May/14/2023)
+- [x] Using multi-threaded processing, the main thread updates the UI and the sub-threads are used to process the video frames and improve the FPS to 48~60.(May/25/2023)
 - [ ] Supports target tracking.
 
 ### Demo
