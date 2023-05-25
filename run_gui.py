@@ -10,6 +10,8 @@ from utils.utils import *
 import onnxruntime
 
 
+
+
 def resize_img(img, img_size=600, value=[255, 255, 255], inter=cv2.INTER_AREA):
     old_shape = img.shape[:2]
     ratio = img_size / max(old_shape)
@@ -24,6 +26,10 @@ def resize_img(img, img_size=600, value=[255, 255, 255], inter=cv2.INTER_AREA):
 
 
 class MyForm(QDialog):
+    
+    # 定义一个自定义信号，用于在文本更新时发出信号
+    text_update_signal = QtCore.pyqtSignal(str)
+    
     def __init__(self, title, textBrowser_size):
         super().__init__()
         self.ui = Ui_Dialog()
@@ -57,6 +63,10 @@ class MyForm(QDialog):
         self.cfg = None
         self.weight_type = None
         self.info = 'red: sunburn; green: ulcer; orange: wind scarring'
+        self.text_update_signal.connect(self.update_text)  # 将信号与槽函数关联
+    
+    def update_text(self, message):
+        self.ui.textBrowser.append(message)  # 更新文本
 
     def read_and_show_image_from_path(self, image_path):
         image = cv2.imdecode(np.fromfile(image_path, np.uint8), cv2.IMREAD_COLOR)
@@ -103,7 +113,7 @@ class MyForm(QDialog):
                 self.cfg = yaml.load(f, Loader=yaml.SafeLoader)
             # init FastSegFormer-p model
             if self.cfg['model_type'] == 'FastSegFormer_P':
-                self.model = FastSegFormer(num_classes=self.cfg['num_classes'], pretrained=False, backbone='poolformer_s12', Pyramid='multiscale', cnn_branch=True).to(self.device)
+                self.model = FastSegFormer(num_classes=self.cfg['num_classes'], pretrained=False, backbone='poolformer_s12', Pyramid='multiscale', cnn_branch=True).to(self.device).eval()
                 if self.cfg['model_path'].endswith('pth'):
                     self.weight_type = 'pth'
                     checkpoint = torch.load(self.cfg['model_path'], map_location=self.device)
@@ -183,21 +193,34 @@ class MyForm(QDialog):
             self.reset_timer()
         
         if type(self.now) is cv2.VideoCapture:
+        
+            """
+            处理视频流
+            """
             fourcc  = cv2.VideoWriter_fourcc(*'XVID')
             size    = (int(self.now.get(cv2.CAP_PROP_FRAME_WIDTH)), int(self.now.get(cv2.CAP_PROP_FRAME_HEIGHT)))
             if self.out is None:
                 self.out = cv2.VideoWriter(os.path.join(self.save_path, f'{self.save_id}.mp4'), fourcc, 30.0, size)
             
             self.track_init()
-            self._timer = QTimer(self)
-            self._timer.timeout.connect(self.show_video)
-            self._timer.start(20)
+            # self._timer = QTimer(self)
+            # 启动新的线程来处理视频帧
+            video_thread = threading.Thread(target=self.show_video)
+            video_thread.start()
+            # self._timer.timeout.connect(self.show_video)
+            # self._timer.start(20)
         elif type(self.now) is list:
+            """
+            处理列表图像
+            """
             self.print_id, self.folder_len = 1, len(self.now)
             self._timer = QTimer(self)
             self._timer.timeout.connect(self.show_folder)
             self._timer.start(20)
         else:
+            """
+            处理单张图像
+            """
             torch.cuda.synchronize()
             since = time.time()
             result, image_det = detect_image(model=self.model, image=self.now, name_classes=self.cfg['name_classes'], num_classes=self.cfg['num_classes'], input_shape=self.cfg['input_shape'], device=self.device, weight_type=self.weight_type)
@@ -231,37 +254,43 @@ class MyForm(QDialog):
             torch.cuda.synchronize()
             end = time.time()
             cv2.imencode(".jpg", image_det)[1].tofile(os.path.join(self.save_path, f'{self.save_id}.jpg'))
-            self.ui.textBrowser.append(f'time:{end-since:.5f}s {self.print_id}/{self.folder_len} save image in {os.path.join(self.save_path, f"{self.save_id}.jpg")}')
+            # self.ui.textBrowser.append(f'time:{end-since:.5f}s {self.print_id}/{self.folder_len} save image in {os.path.join(self.save_path, f"{self.save_id}.jpg")}')
+            self.text_update_signal.emit(f'time:{end-since:.5f}s {self.print_id}/{self.folder_len} save image in {os.path.join(self.save_path, f"{self.save_id}.jpg")}')
             self.show_image_from_array(image_det, det=True)
             self.print_id += 1
             self.save_id += 1
             self.now.pop(0)
     
+    
     def show_video(self):
-        flag, image = self.now.read()
-        if flag:
-            self.show_image_from_array(image, ori=True)
-            torch.cuda.synchronize()
-            since = time.time()
-            result, image_det = detect_image(model=self.model, image=image.copy(), name_classes=self.cfg['name_classes'], num_classes=self.cfg['num_classes'], input_shape=self.cfg['input_shape'], device=self.device, weight_type=self.weight_type)
-            if self.ui.comboBox.currentText() != 'NoTrack':
-                image_det = self.model.track_processing(image.copy(), result)
-            torch.cuda.synchronize()
-            end = time.time()
-            self.out.write(image_det)
-            self.show_image_from_array(image_det, det=True)
-            if self.video_count is not None:
-                self.ui.textBrowser.append(f'{self.print_id}/{self.video_count} Frames. time:{end-since:.5f}s fps:{1 / (end-since):.3f}\n' + self.info)
+        while self.now is not None:
+            flag, image = self.now.read()
+            if flag:
+                self.show_image_from_array(image, ori=True)
+                torch.cuda.synchronize()
+                since = time.time()
+                seg_img, image_det = detect_image(model=self.model, image=image, name_classes=self.cfg['name_classes'], num_classes=self.cfg['num_classes'], input_shape=self.cfg['input_shape'], device=self.device, weight_type=self.weight_type)
+                if self.ui.comboBox.currentText() != 'NoTrack':
+                    image_det = self.model.track_processing(image.copy(), seg_img)
+                torch.cuda.synchronize()
+                end = time.time()
+                self.out.write(image_det)
+                self.show_image_from_array(image_det, det=True)
+                if self.video_count is not None:
+                    self.text_update_signal.emit(f'{self.print_id}/{self.video_count} Frames. time:{end-since:.5f}s fps:{1 / (end-since):.3f}' + self.info)
+                    # self.ui.textBrowser.append(f'{self.print_id}/{self.video_count} Frames. time:{end-since:.5f}s fps:{1 / (end-since):.3f}' + self.info)
+                else:
+                    self.text_update_signal.emit(f'{self.print_id} Frames. time:{end-since:.5f}s fps:{1 / (end-since):.3f}' + self.info)
+                    # self.ui.textBrowser.append(f'{self.print_id} Frames. time:{end-since:.5f}s fps:{1 / (end-since):.3f}' + self.info)
+                self.print_id += 1
+                
             else:
-                self.ui.textBrowser.append(f'{self.print_id} Frames. time:{end-since:.5f}s fps:{1 / (end-since):.3f}\n' + self.info)
-            self.print_id += 1
-        else:
-            self.now = None
-            self.reset_timer()
-            self.out.release()
-            self.out = None
-            self.reset_video_count()
-            self.save_id += 1
+                self.now = None
+                self.reset_timer()
+                self.out.release()
+                self.out = None
+                self.reset_video_count()
+                self.save_id += 1
 
     def _exit(self):
         self.close()

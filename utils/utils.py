@@ -9,12 +9,7 @@ import torch
 import torch.nn.functional as F
 
 
-def cvtColor(image):
-        if len(np.shape(image)) == 3 and np.shape(image)[2] == 3:
-            return image 
-        else:
-            image = image.convert('RGB')
-            return image 
+
 
 def preprocess_input(image):
     image /= 255.0
@@ -34,7 +29,6 @@ def blend_images(old_image, new_image, alpha):
 
 def detect_image(model, image, name_classes = None, num_classes = 21, count = False, input_shape = [224, 224], device = 'cpu', weight_type = None):
         # 转化为彩色图像
-        image = cvtColor(image)
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
         # 对输入图像做一个备份
         old_img = copy.deepcopy(image)
@@ -100,12 +94,6 @@ def detect_image(model, image, name_classes = None, num_classes = 21, count = Fa
 
 
 
-
-
-
-
-
-# def detect_image_thread(model, image, name_classes = None, num_classes = 21, count = False, input_shape = [224, 224], device = 'cpu', weight_type = None):    
 
 
 
