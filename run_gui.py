@@ -203,12 +203,12 @@ class MyForm(QDialog):
                 self.out = cv2.VideoWriter(os.path.join(self.save_path, f'{self.save_id}.mp4'), fourcc, 30.0, size)
             
             self.track_init()
-            # self._timer = QTimer(self)
+            self._timer = QTimer(self)
             # 启动新的线程来处理视频帧
             video_thread = threading.Thread(target=self.show_video)
             video_thread.start()
             # self._timer.timeout.connect(self.show_video)
-            # self._timer.start(20)
+            self._timer.start(20)
         elif type(self.now) is list:
             """
             处理列表图像
