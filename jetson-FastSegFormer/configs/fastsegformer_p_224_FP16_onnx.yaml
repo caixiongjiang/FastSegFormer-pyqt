@@ -1,0 +1,4 @@
+num_classes: 4
+model_path: weights/FastSegFormer_P_224_FP16.onnx
+model_type: FastSegFormer_P
+name_classes: ["background", "sunburn", "Ulcer", "wind scarring"]

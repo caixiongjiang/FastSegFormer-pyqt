@@ -1,0 +1,31 @@
+[property]
+gpu-id=0
+net-scale-factor=1.0 
+model-color-format=0
+labelfile-path=./labels.txt                  
+onnx-file=./weights/FastSegFormer_P_224_FP16.onnx
+# model-engine-file=./weights/FastSegFormer_P_224_FP16.trt
+infer-dims=3;224;224
+# uff-input-order=0
+# uff-input-blob-name=data
+batch-size=2
+## 0=FP32, 1=INT8, 2=FP16 mode
+network-mode=2
+num-detected-classes=4
+interval=0
+gie-unique-id=1
+network-type=2
+output-blob-names=final_conv/BiasAdd
+segmentation-threshold=0.0
+#parse-bbox-func-name=NvDsInferParseCustomSSD
+#custom-lib-path=nvdsinfer_custom_impl_ssd/libnvdsinfer_custom_impl_ssd.so
+#scaling-filter=0
+#scaling-compute-hw=0
+
+[class-attrs-all]
+roi-top-offset=0
+roi-bottom-offset=0
+detected-min-w=0
+detected-min-h=0
+detected-max-w=0
+detected-max-h=0

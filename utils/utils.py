@@ -52,8 +52,7 @@ def detect_image(model, image, name_classes = None, num_classes = 21, count = Fa
                 pred = pred.argmax(axis=-1)
         elif weight_type == 'onnx':
             ort_inputs = {'images': image_data}
-            pred = model.run(['output'], ort_inputs)[0]
-            pred = pred[0]
+            pred = model.run(['output'], ort_inputs)[0][0]
             # 转化为张量
             pred = torch.tensor(pred)
             pred = F.softmax(pred.permute(1,2,0),dim = -1).cpu().numpy()

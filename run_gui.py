@@ -64,6 +64,8 @@ class MyForm(QDialog):
         self.weight_type = None
         self.info = 'red: sunburn; green: ulcer; orange: wind scarring'
         self.text_update_signal.connect(self.update_text)  # 将信号与槽函数关联
+        self.fps_all = 0
+        self.frame_all = 0
     
     def update_text(self, message):
         self.ui.textBrowser.append(message)  # 更新文本
@@ -120,6 +122,7 @@ class MyForm(QDialog):
                     self.model.load_state_dict(checkpoint)
                 elif self.cfg['model_path'].endswith('onnx'):
                     self.weight_type = 'onnx'
+                    # providers = ['CPUExecutionProvider']
                     providers = ['CUDAExecutionProvider', 'CPUExecutionProvider']
                     self.model = onnxruntime.InferenceSession(self.cfg['model_path'], providers=providers)
             else:
@@ -208,7 +211,7 @@ class MyForm(QDialog):
             video_thread = threading.Thread(target=self.show_video)
             video_thread.start()
             # self._timer.timeout.connect(self.show_video)
-            self._timer.start(20)
+            # self._timer.start(20)
         elif type(self.now) is list:
             """
             处理列表图像
@@ -266,6 +269,7 @@ class MyForm(QDialog):
         while self.now is not None:
             flag, image = self.now.read()
             if flag:
+                self.frame_all += 1
                 self.show_image_from_array(image, ori=True)
                 torch.cuda.synchronize()
                 since = time.time()
@@ -276,6 +280,8 @@ class MyForm(QDialog):
                 end = time.time()
                 self.out.write(image_det)
                 self.show_image_from_array(image_det, det=True)
+                fps = 1/(end-since)
+                self.fps_all += fps
                 if self.video_count is not None:
                     self.text_update_signal.emit(f'{self.print_id}/{self.video_count} Frames. time:{end-since:.5f}s fps:{1 / (end-since):.3f}' + self.info)
                     # self.ui.textBrowser.append(f'{self.print_id}/{self.video_count} Frames. time:{end-since:.5f}s fps:{1 / (end-since):.3f}' + self.info)
@@ -283,8 +289,9 @@ class MyForm(QDialog):
                     self.text_update_signal.emit(f'{self.print_id} Frames. time:{end-since:.5f}s fps:{1 / (end-since):.3f}' + self.info)
                     # self.ui.textBrowser.append(f'{self.print_id} Frames. time:{end-since:.5f}s fps:{1 / (end-since):.3f}' + self.info)
                 self.print_id += 1
-                
+                    
             else:
+                print(f'Average fps:{self.fps_all/self.frame_all:.3f}')
                 self.now = None
                 self.reset_timer()
                 self.out.release()

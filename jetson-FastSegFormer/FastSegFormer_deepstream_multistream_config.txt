@@ -1,0 +1,33 @@
+[property]
+gpu-id=0                                     # 指定使用的GPU设备ID
+net-scale-factor=0.017507                    # 输入图像的缩放比例   224/1280=0.017507
+# offsets=123.675;116.280;103.53             # 数据预处理(归一化)
+model-color-format=0                         # 输入图像的颜色格式，0表示RGB 1表示BGR 2表示Gray
+labelfile-path=./labels.txt                  # 标签文件
+onnx-file=./weights/FastSegFormer_P_224_FP16.onnx   # onnx模型文件
+# model-engine-file=./weights/FastSegFormer_P_224_FP16.trt               # 注释表示使用在线生成引擎模式
+# int8-calib-file=../../../../samples/models/tao_pretrained_models/peopleSegNet/V2/peoplesegnet_resnet50_int8.txt  # 用于INT8推理模式的校准文件
+infer-dims=3;224;224                         # 推理的输入尺寸
+# uff-input-blob-name=Input                    
+batch-size=2
+## 0=FP32, 1=INT8, 2=FP16 mode
+network-mode=2
+num-detected-classes=4
+interval=0                                   # 推理间隔 
+gie-unique-id=1
+network-type=2                 # 0: Detector 1: Classifier 2: Segmentation 3: Instance Segmentation   
+segmentation-threshold=0.0                           
+# output-blob-names=generate_detections;mask_fcn_logits/BiasAdd
+# parse-bbox-instance-mask-func-name=NvDsInferParseCustomMrcnnTLTV2
+# custom-lib-path=/opt/nvidia/deepstream/deepstream/lib/libnvds_infercustomparser.so 
+# 要使用的聚类算法：1=DBSCAN, 2=NMS, 3= DBSCAN+NMS Hybrid, 4 = None(No clustering)
+cluster-mode=4                                 
+# output-instance-mask=0                         # 是否在对象元数据中附加实例掩码输出
+
+[class-attrs-all]
+roi-top-offset=0
+roi-bottom-offset=0
+detected-min-w=0
+detected-min-h=0
+detected-max-w=0
+detected-max-h=0
