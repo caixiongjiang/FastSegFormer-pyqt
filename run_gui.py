@@ -298,6 +298,7 @@ class MyForm(QDialog):
                 self.out = None
                 self.reset_video_count()
                 self.save_id += 1
+        
 
     def _exit(self):
         self.close()

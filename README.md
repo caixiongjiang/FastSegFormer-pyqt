@@ -1,5 +1,7 @@
 ## FastSegFormer-pyqt
 
+[中文](https://github.com/caixiongjiang/FastSegFormer-pyqt/blob/main/README_CH.md)
+
 Navel orange defect segmentation model video detection UI.
 
 ### Update
@@ -31,7 +33,7 @@ $ pip install -r requirements.txt
 ```shell
 python run_gui.py
 ```
-* Jetson nano Deployment: [Click]()
+* Jetson Nano Deployment: [Usage]()
 
 ### Testing performance comparison
 
@@ -80,7 +82,7 @@ python run_gui.py
 	</tr>
   <tr>
 	    <td style="text-align: center;">PyTorch</td>
-      <td rowspan="2" style="text-align: center;">Dual thread</td>
+      <td rowspan="2" style="text-align: center;">Multi-thread</td>
       <td style="text-align: center;">46.94</td>
 	</tr>
   <tr>
@@ -130,7 +132,7 @@ Conclusion：
 	</tr>
 	<tr>
       <td style="text-align: center;">ONNXRuntime</td>
-      <td rowspan="2" style="text-align: center;">Dual thread</td>
+      <td rowspan="2" style="text-align: center;">Multi-thread</td>
       <td style="text-align: center;">~</td>
 	</tr>
 	<tr>
@@ -155,7 +157,7 @@ Conclusion：
 	</tr>
   <tr>
       <td style="text-align: center;">ONNXRuntime</td>
-      <td rowspan="2" style="text-align: center;">Dual thread</td>
+      <td rowspan="2" style="text-align: center;">Multi-thread</td>
       <td style="text-align: center;">~</td>
 	</tr>
   <tr>
