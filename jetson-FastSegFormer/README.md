@@ -1,6 +1,6 @@
 ## Jetson-FastSegFormer
 
-[中文](https://github.com/caixiongjiang/FastSegFormer-pyqt/blob/main/jetson-FastSegFormer/README.md)
+[中文](https://github.com/caixiongjiang/FastSegFormer-pyqt/blob/main/jetson-FastSegFormer/README_CH.md)
 
 ### Environment
 

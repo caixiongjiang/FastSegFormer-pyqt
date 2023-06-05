@@ -33,7 +33,7 @@ $ pip install -r requirements.txt
 ```shell
 python run_gui.py
 ```
-* Jetson Nano部署: [使用](https://github.com/caixiongjiang/FastSegFormer-pyqt/blob/main/jetson-FastSegFormer/README.md)
+* Jetson Nano部署: [使用](https://github.com/caixiongjiang/FastSegFormer-pyqt/blob/main/jetson-FastSegFormer)
 
 ### 测试性能比较
 
