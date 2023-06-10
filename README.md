@@ -146,7 +146,7 @@ Conclusion：
 	</tr>
   <tr>
 	    <td rowspan="5" style="text-align: center;">CSI Camera Detection</td>
-      <td rowspan="5" style="text-align: center;">$640\times 480$</td>
+      <td rowspan="5" style="text-align: center;">$1280\times 720$</td>
       <td style="text-align: center;">ONNXRuntime</td>
       <td rowspan="2" style="text-align: center;">Single frame</td>
       <td style="text-align: center;">5</td>
