@@ -67,4 +67,6 @@ $ python3 detect.py --mode=camera --weight_type=.trt
 如果你的Jetson设备有超过4G的内存，你可以通过设置参数`--thread=True`来使用多线程来加快检测速度。
 
 * 使用TensorRT和DeepStream进行实时CSI相机/视频分割：
-仍然存在一些问题。请参考官方给出的例子进行修改：[deepstream-segmentation](https://github.com/NVIDIA-AI-IOT/deepstream_python_apps/tree/master/apps/deepstream-segmentation)和[deepstream-gmask](https://github.com/NVIDIA-AI-IOT/deepstream_python_apps/tree/master/apps/deepstream-segmask)。
+```python
+$ python3 deepstream_detect_multiStream.py
+```

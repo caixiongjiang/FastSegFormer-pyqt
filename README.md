@@ -11,7 +11,7 @@ Navel orange defect segmentation model video detection UI.
 - [x] Support onnx format for video detection. (May/14/2023)
 - [x] Using multi-threaded processing, the main thread updates the UI and the sub-threads are used to process the video frames and improve the FPS to 48~60.(May/25/2023)
 - [x] Deployed on Jetson Nano(4G), an edge computing device with ONNXRuntime and TensorRT.(May/30/2023)
-- [ ] Acceleration with DeepStream Framework on Jetson Nano(4G).
+- [x] Acceleration with DeepStream Framework on Jetson Nano(4G).(June/16/2023)
 
 ### Demo
 
@@ -124,11 +124,11 @@ Conclusion：
       <td rowspan="10" style="text-align: center;"> 0.4716 TFLOPS</td>
       <td rowspan="10" style="text-align: center;">FP16</td>
       <td rowspan="2" style="text-align: center;">Single frame</td>
-      <td style="text-align: center;">7.02</td>
+      <td style="text-align: center;">10</td>
 	</tr>
 	<tr>
 	    <td style="text-align: center;">TensorRT</td>
-      <td style="text-align: center;">11.50</td>
+      <td style="text-align: center;">15</td>
 	</tr>
 	<tr>
       <td style="text-align: center;">ONNXRuntime</td>
@@ -142,18 +142,18 @@ Conclusion：
   <tr>
 	    <td style="text-align: center;">TensorRT</td>
       <td style="text-align: center;">DeepStream</td>
-      <td style="text-align: center;">--</td>
+      <td style="text-align: center;">23</td>
 	</tr>
   <tr>
 	    <td rowspan="5" style="text-align: center;">CSI Camera Detection</td>
       <td rowspan="5" style="text-align: center;">$1280\times 720$</td>
       <td style="text-align: center;">ONNXRuntime</td>
       <td rowspan="2" style="text-align: center;">Single frame</td>
-      <td style="text-align: center;">5</td>
+      <td style="text-align: center;">8</td>
 	</tr>
   <tr>
       <td style="text-align: center;">TensorRT</td>
-      <td style="text-align: center;">7</td>
+      <td style="text-align: center;">12</td>
 	</tr>
   <tr>
       <td style="text-align: center;">ONNXRuntime</td>
@@ -167,12 +167,10 @@ Conclusion：
   <tr>
       <td style="text-align: center;">TensorRT</td>
       <td style="text-align: center;">DeepStream</td>
-      <td style="text-align: center;">--</td>
+      <td style="text-align: center;">20</td>
 	</tr>
 </table>
 ~:Can't run dual-threaded acceleration on Jetson nano (4G) because of lack of memory.
-
---:Currently not achieved.
 
 
 

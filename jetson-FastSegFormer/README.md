@@ -67,4 +67,6 @@ $ python3 detect.py --mode=camera --weight_type=.trt
 If your Jetson device has more than 4G memory, you can use multiple threads to speed up the detection by setting the parameter `--thread=True`.
 
 * Real-time CSI camera/video segmentation using TensorRT and DeepStream:
-There are still some problems. Please refer to the official example given for modification:[deepstream-segmentation](https://github.com/NVIDIA-AI-IOT/deepstream_python_apps/tree/master/apps/deepstream-segmentation) and [deepstream-segmask](https://github.com/NVIDIA-AI-IOT/deepstream_python_apps/tree/master/apps/deepstream-segmask).
+```python
+$ python3 deepstream_detect_multiStream.py
+```

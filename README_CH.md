@@ -11,7 +11,7 @@
 - [x] 支持onnx格式的视频检测。(2023.5.14)
 - [x] 使用多线程处理，主线程更新用户界面，子线程用于处理视频帧，将FPS提高到48~55。(2023.5.25)
 - [x] 部署在Jetson Nano(4G)边缘计算设备上，使用ONNXRuntime和TensorRT进行视觉检测。 (2023.05.30)
-- [ ] 在Jetson Nano(4G)上使用DeepStream框架进行加速。
+- [x] 在Jetson Nano(4G)上使用DeepStream框架进行加速。
 
 ### 演示
 
@@ -123,11 +123,11 @@ Conclusion：
       <td rowspan="10" style="text-align: center;"> 0.4716 TFLOPS</td>
       <td rowspan="10" style="text-align: center;">FP16</td>
       <td rowspan="2" style="text-align: center;">逐帧处理</td>
-      <td style="text-align: center;">7.02</td>
+      <td style="text-align: center;">10</td>
 	</tr>
 	<tr>
 	    <td style="text-align: center;">TensorRT</td>
-      <td style="text-align: center;">11.50</td>
+      <td style="text-align: center;">15</td>
 	</tr>
 	<tr>
       <td style="text-align: center;">ONNXRuntime</td>
@@ -141,18 +141,18 @@ Conclusion：
   <tr>
 	    <td style="text-align: center;">TensorRT</td>
       <td style="text-align: center;">DeepStream视觉处理框架</td>
-      <td style="text-align: center;">--</td>
+      <td style="text-align: center;">23</td>
 	</tr>
   <tr>
 	    <td rowspan="5" style="text-align: center;">CSI Camera Detection</td>
       <td rowspan="5" style="text-align: center;">$640\times 480$</td>
       <td style="text-align: center;">ONNXRuntime</td>
       <td rowspan="2" style="text-align: center;">逐帧处理</td>
-      <td style="text-align: center;">5</td>
+      <td style="text-align: center;">8</td>
 	</tr>
   <tr>
       <td style="text-align: center;">TensorRT</td>
-      <td style="text-align: center;">7</td>
+      <td style="text-align: center;">12</td>
 	</tr>
   <tr>
       <td style="text-align: center;">ONNXRuntime</td>
@@ -166,12 +166,11 @@ Conclusion：
   <tr>
       <td style="text-align: center;">TensorRT</td>
       <td style="text-align: center;">DeepStream视觉处理框架</td>
-      <td style="text-align: center;">--</td>
+      <td style="text-align: center;">20</td>
 	</tr>
 </table>
 ~:由于内存不足，无法在Jetson nano（4G）上运行多线程加速。
 
---:目前尚未实现。
 
 
 
