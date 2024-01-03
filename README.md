@@ -63,7 +63,7 @@ python run_gui.py
 	    <td rowspan="6" style="text-align: center;">$224\times 224$</td>
       <td style="text-align: center;">PyTorch</td>
       <td rowspan="6" style="text-align: center;">12.74 TFLOPS</td>
-      <td rowspan="2" style="text-align: center;">FP32</td>
+      <td rowspan="6" style="text-align: center;">FP32</td>
       <td rowspan="4" style="text-align: center;">Single frame</td>
       <td style="text-align: center;">32.62</td>
 	</tr>
@@ -73,7 +73,6 @@ python run_gui.py
 	</tr>
 	<tr>
 	    <td style="text-align: center;">PyTorch</td>
-      <td rowspan="4" style="text-align: center;">FP16</td>
       <td style="text-align: center;">32.24</td>
 	</tr>
 	<tr>
